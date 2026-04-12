@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Transaction Class
+class Transaction {
+public:
+string type;
+float amount;
+float balance;
+Transaction(string t, float a, float b) {
+    type = t;
+    amount = a;
+    balance = b;
+}
+
+void display() {
+cout << type << " | Amount: " << amount << " | Balance: " <<
+balance << endl;
+    }
+};
+
+// Customer Class
+class Customer {
+public:
+    int customerID;
+    string name;
+
+    Customer(int id, string n) {
+        customerID = id;
+        name = n;
+    }
+};
+
+// Account Class
+class Account {
+public:
+    int accountNumber;
+    float balance;
+    Customer customer;
+    vector<Transaction> transactions;
+
+Account(int accNo, Customer c) : customer(c) {
+accountNumber = accNo;
+balance = 0;
+}
+
+    // Deposit
+void deposit(float amount) {
+        balance += amount;
+        transactions.push_back(Transaction("Deposit", amount, balance));
+        cout << "Amount Deposited Successfully\n";
+    }
+
+    // Withdraw
+void withdraw(float amount) {
+    if(amount > balance) {
+    cout << "Insufficient Balance!\n";
+    } else {
+    balance -= amount;
+    transactions.push_back(Transaction("Withdraw", amount, balance));
+    cout << "Amount Withdrawn Successfully\n";
+    }
+}
+// Transfer
+void transfer(Account &receiver, float amount) {
+    if(amount > balance) {
+    cout << "Insufficient Balance!\n";
+} else {
+    balance -= amount;
+    receiver.balance += amount;
+
+    transactions.push_back(Transaction("Transfer Sent", amount, balance));
+    receiver.transactions.push_back(Transaction("TransferReceived", amount, receiver.balance));
+
+cout << "Transfer Successful\n";
+        }
+    }
+
+    // Show Account Details
+void showDetails() {
+cout << "\nAccount Number: " << accountNumber << endl;
+cout << "Customer Name: " << customer.name << endl;
+cout << "Balance: " << balance << endl;
+}
+// Show Transactions
+void showTransactions() {
+cout << "\nTransaction History:\n";
+    for(int i = 0; i < transactions.size(); i++) {
+transactions[i].display();
+}
+}
+};
+int main() {
+Customer c1(1, "Laksh");
+Customer c2(2, "Rahul");
+
+Account acc1(101, c1);
+Account acc2(102, c2);
+
+acc1.deposit(1000);
+acc1.withdraw(200);
+acc1.transfer(acc2, 300);
+
+acc1.showDetails();
+acc1.showTransactions();
+
+acc2.showDetails();
+acc2.showTransactions();
+
+    return 0;
+}
