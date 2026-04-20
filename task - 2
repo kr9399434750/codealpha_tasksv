@@ -1,0 +1,174 @@
+#include <iostream>
+#include <vector>
+#include <iomanip>
+using namespace std;
+
+// Transaction Class
+class Transaction {
+public:
+    string type;
+    double amount;
+    double balance;
+
+    Transaction(string t, double a, double b) {
+        type = t;
+        amount = a;
+        balance = b;
+    }
+
+    void display() const {
+        cout << type << " | Amount: " << fixed << setprecision(2)
+             << amount << " | Balance: " << balance << endl;
+    }
+};
+
+// Customer Class
+class Customer {
+public:
+    int customerID;
+    string name;
+
+    Customer(int id, string n) {
+        customerID = id;
+        name = n;
+    }
+};
+
+// Account Class
+class Account {
+public:
+    int accountNumber;
+    double balance;
+    Customer customer;
+    vector<Transaction> transactions;
+
+    Account(int accNo, const Customer &c) : customer(c), balance(0) {}
+
+    void deposit(double amount) {
+        if (amount <= 0) {
+            cout << "Invalid amount!\n";
+            return;
+        }
+        balance += amount;
+        transactions.push_back(Transaction("Deposit", amount, balance));
+        cout << "Amount Deposited Successfully\n";
+    }
+
+    void withdraw(double amount) {
+        if (amount <= 0) {
+            cout << "Invalid amount!\n";
+            return;
+        }
+        if (amount > balance) {
+            cout << "Insufficient Balance!\n";
+        } else {
+            balance -= amount;
+            transactions.push_back(Transaction("Withdraw", amount, balance));
+            cout << "Amount Withdrawn Successfully\n";
+        }
+    }
+
+    void transfer(Account &receiver, double amount) {
+        if (amount <= 0) {
+            cout << "Invalid amount!\n";
+            return;
+        }
+        if (amount > balance) {
+            cout << "Insufficient Balance!\n";
+        } else {
+            balance -= amount;
+            receiver.balance += amount;
+
+            transactions.push_back(Transaction("Transfer Sent", amount, balance));
+            receiver.transactions.push_back(
+                Transaction("Transfer Received", amount, receiver.balance)
+            );
+
+            cout << "Transfer Successful\n";
+        }
+    }
+
+    void showDetails() const {
+        cout << "\nAccount Number: " << accountNumber << endl;
+        cout << "Customer Name: " << customer.name << endl;
+        cout << "Balance: " << fixed << setprecision(2) << balance << endl;
+    }
+
+    void showTransactions() const {
+        cout << "\nTransaction History:\n";
+        for (const auto &t : transactions) {
+            t.display();
+        }
+    }
+};
+
+int main() {
+    Customer c1(1, "Laksh");
+    Customer c2(2, "Rahul");
+
+    Account acc1(101, c1);
+    Account acc2(102, c2);
+
+    int choice;
+    double amount;
+
+    do {
+        cout << "\n===== BANK MENU =====\n";
+        cout << "1. Deposit\n";
+        cout << "2. Withdraw\n";
+        cout << "3. Transfer (acc1 -> acc2)\n";
+        cout << "4. Show Account 1 Details\n";
+        cout << "5. Show Account 2 Details\n";
+        cout << "6. Show Account 1 Transactions\n";
+        cout << "7. Show Account 2 Transactions\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+                cout << "Enter amount to deposit: ";
+                cin >> amount;
+                acc1.deposit(amount);
+                break;
+
+            case 2:
+                cout << "Enter amount to withdraw: ";
+                cin >> amount;
+                acc1.withdraw(amount);
+                break;
+
+            case 3:
+                cout << "Enter amount to transfer: ";
+                cin >> amount;
+                acc1.transfer(acc2, amount);
+                break;
+
+            case 4:
+                acc1.showDetails();
+                break;
+
+            case 5:
+                acc2.showDetails();
+                break;
+
+            case 6:
+                acc1.showTransactions();
+                break;
+
+            case 7:
+                acc2.showTransactions();
+                break;
+
+            case 0:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while(choice != 0);
+
+    return 0;
+}
