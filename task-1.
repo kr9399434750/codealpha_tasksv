@@ -1,4 +1,4 @@
-[5:56 PM, 4/12/2026] Lakshya Clg IT: #include <iostream>
+ #include <iostream>
 using namespace std;
 
 int main() {
